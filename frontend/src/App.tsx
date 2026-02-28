@@ -9,7 +9,7 @@ import { CreateVoteForm } from "./components/CreateVoteForm";
 import { AuctionList } from "./components/AuctionList";
 import { CreateAuctionForm } from "./components/CreateAuctionForm";
 import { AuctionDetailPage } from "./components/AuctionDetailPage";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { CustomConnectButton } from "./components/CustomConnectButton";
 import { useAccount } from "wagmi";
 
 function HomePage() {
@@ -406,7 +406,7 @@ function App() {
             Obscura
           </h1>
         </Link>
-        <ConnectButton />
+        <CustomConnectButton />
       </header>
 
       <Routes>
