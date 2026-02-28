@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useCreateAuction } from "../hooks/useAuctionFactory";
 import { decodeEventLog } from "viem";
 import { usePublicClient } from "wagmi";
+import { useQueryClient } from "@tanstack/react-query";
 import { AUCTION_FACTORY_ABI } from "../config/auction";
 
 export function CreateAuctionForm({
@@ -11,6 +12,7 @@ export function CreateAuctionForm({
 }) {
   const { createAuction, isPending } = useCreateAuction();
   const publicClient = usePublicClient();
+  const queryClient = useQueryClient();
 
   const [title, setTitle] = useState("");
   const [commitMinutes, setCommitMinutes] = useState(120);
@@ -40,6 +42,9 @@ export function CreateAuctionForm({
       );
 
       const receipt = await publicClient!.waitForTransactionReceipt({ hash });
+
+      // Force auction list to refetch
+      await queryClient.invalidateQueries();
 
       const auctionCreatedLog = receipt.logs.find((log) => {
         try {
