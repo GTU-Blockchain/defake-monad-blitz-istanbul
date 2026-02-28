@@ -20,7 +20,7 @@ contract AuctionFactory {
         uint256 _commitDuration,
         uint256 _revealDuration
     ) external returns (address) {
-        SealedBidAuction newAuction = new SealedBidAuction(_title, _commitDuration, _revealDuration);
+        SealedBidAuction newAuction = new SealedBidAuction(_title, _commitDuration, _revealDuration, msg.sender);
         auctions.push(AuctionInfo(address(newAuction), msg.sender, _title, block.timestamp));
         emit AuctionCreated(auctions.length - 1, address(newAuction), msg.sender, _title);
         return address(newAuction);

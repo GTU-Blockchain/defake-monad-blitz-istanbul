@@ -31,9 +31,10 @@ contract SealedBidAuction {
     constructor(
         string memory _title,
         uint256 _commitDuration,
-        uint256 _revealDuration
+        uint256 _revealDuration,
+        address _creator
     ) {
-        owner = msg.sender;
+        owner = _creator;
         title = _title;
         commitDeadline = block.timestamp + _commitDuration;
         revealDeadline = commitDeadline + _revealDuration;
