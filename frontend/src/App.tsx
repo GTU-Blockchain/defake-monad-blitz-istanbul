@@ -10,11 +10,16 @@ function App() {
   const { isConnected } = useAccount();
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
-      <header className="w-full max-w-4xl flex justify-between items-center mb-10">
-        <h1 className="text-3xl font-extrabold text-blue-800 tracking-tight">
-          Monad Blitz Voting
-        </h1>
+    <div className="min-h-screen flex flex-col items-center p-6 bg-transparent text-foreground">
+      <header className="w-full max-w-4xl flex justify-between items-center mb-10 border-b border-border pb-4">
+        <div className="flex items-center gap-3">
+          <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-white">
+            <path d="M12 2L2 22h20L12 2z" fill="currentColor" />
+          </svg>
+          <h1 className="text-2xl font-bold text-white tracking-widest font-mono uppercase">
+            Monad Blitz
+          </h1>
+        </div>
         <ConnectButton />
       </header>
 
@@ -22,7 +27,7 @@ function App() {
         <div className="flex-1 flex flex-col">
           <PhaseBanner />
           {!isConnected ? (
-            <div className="bg-white p-8 rounded-xl shadow-md text-center text-gray-500">
+            <div className="bg-black/40 backdrop-blur-md border border-border p-8 rounded-xl shadow-lg text-center text-muted-foreground font-mono">
               Please connect your wallet to participate.
             </div>
           ) : (

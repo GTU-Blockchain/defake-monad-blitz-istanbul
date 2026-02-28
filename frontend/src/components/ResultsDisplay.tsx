@@ -10,7 +10,7 @@ export function ResultsDisplay() {
 
   // Find winner(s)
   let maxVotes = -1;
-  const winners = [];
+  const winners: any[] = [];
   for (const p of proposals) {
     const v = Number(p.voteCount);
     if (v > maxVotes) {
@@ -23,8 +23,11 @@ export function ResultsDisplay() {
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md mx-auto">
-      <h3 className="text-2xl font-bold mb-6 text-gray-800">
+    <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full max-w-md mx-auto relative overflow-hidden">
+      {/* Decorative top border */}
+      <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent opacity-50"></div>
+
+      <h3 className="text-xl font-bold font-mono tracking-widest uppercase mb-6 text-foreground/90">
         {phase === "ENDED" ? "Final Results" : "Live Tally"}
       </h3>
 
@@ -38,19 +41,32 @@ export function ResultsDisplay() {
 
           return (
             <div key={index} className="relative">
-              <div className="flex justify-between mb-1">
-                <span className="font-semibold text-gray-700 flex items-center gap-2">
+              <div className="flex justify-between mb-2">
+                <span
+                  className={`font-mono text-sm tracking-wider uppercase flex items-center gap-2 ${
+                    isWinner ? "text-purple-400" : "text-foreground/80"
+                  }`}
+                >
                   {p.name}
-                  {isWinner && <span title="Winner">👑</span>}
+                  {isWinner && (
+                    <span
+                      title="Winner"
+                      className="text-xl drop-shadow-[0_0_8px_rgba(139,92,246,0.8)]"
+                    >
+                      👑
+                    </span>
+                  )}
                 </span>
-                <span className="text-gray-600 font-medium">
-                  {voteCount} {voteCount === 1 ? "vote" : "votes"}
+                <span className="text-muted-foreground font-mono text-sm">
+                  {voteCount} {voteCount === 1 ? "VOTE" : "VOTES"}
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+              <div className="w-full bg-muted/50 rounded-sm h-2 overflow-hidden border border-border/30">
                 <div
-                  className={`h-3 rounded-full transition-all duration-1000 ${
-                    isWinner ? "bg-yellow-400" : "bg-blue-500"
+                  className={`h-2 rounded-sm transition-all duration-1000 ${
+                    isWinner
+                      ? "bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)]"
+                      : "bg-accent opacity-80"
                   }`}
                   style={{ width: `${Math.max(percentage, 2)}%` }}
                 ></div>

@@ -4,17 +4,17 @@ import { useVotingState } from "../hooks/useVotingState";
 export function PhaseBanner() {
   const { phase, timeLeft } = useVotingState();
 
-  let phaseColor = "bg-gray-500";
+  let phaseColor = "bg-muted border-border";
   let timeRemaining = 0;
 
   if (phase === "COMMIT") {
-    phaseColor = "bg-orange-500";
+    phaseColor = "bg-orange-500/20 border-orange-500/50 text-orange-400";
     timeRemaining = timeLeft ? Number(timeLeft[0]) : 0;
   } else if (phase === "REVEAL") {
-    phaseColor = "bg-green-500";
+    phaseColor = "bg-green-500/20 border-green-500/50 text-green-400";
     timeRemaining = timeLeft ? Number(timeLeft[1]) : 0;
   } else if (phase === "ENDED") {
-    phaseColor = "bg-purple-500";
+    phaseColor = "bg-purple-500/20 border-purple-500/50 text-purple-400";
   }
 
   return (
