@@ -27,11 +27,12 @@ function HomePage() {
       {/* Hero */}
       <div className="text-center mb-10">
         <h2 className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-white mb-3">
-          Decentralized Governance & Asset Exchange
+          Privacy-First Decisions on Monad
         </h2>
         <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
-          Create and participate in secure, front-running resistant votes and
-          sealed-bid auctions powered by commit-reveal on Monad.
+          Vote and bid without revealing your choice. Obscura uses commit-reveal
+          cryptography to keep your decisions hidden until everyone has
+          committed.
         </p>
       </div>
 
