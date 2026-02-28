@@ -58,7 +58,7 @@ export function AuctionDetailPage() {
   const contractAddress = address as `0x${string}`;
 
   return (
-    <main className="w-full max-w-2xl mx-auto">
+    <main className="w-full max-w-4xl mx-auto">
       <Link
         to="/"
         className="inline-flex items-center gap-2 mb-6 text-sm font-mono text-muted-foreground hover:text-purple-400 transition-colors group"

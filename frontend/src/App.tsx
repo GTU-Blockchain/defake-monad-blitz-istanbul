@@ -23,7 +23,7 @@ function HomePage() {
   const [showCreateAuction, setShowCreateAuction] = useState(false);
 
   return (
-    <main className="w-full max-w-2xl mx-auto">
+    <main className="w-full max-w-4xl mx-auto">
       {/* Hero */}
       <div className="text-center mb-10">
         <h2 className="text-3xl sm:text-4xl font-bold font-mono tracking-tight text-white mb-3">
@@ -324,7 +324,7 @@ function VoteDetailPage() {
   const contractAddress = address as `0x${string}`;
 
   return (
-    <main className="w-full max-w-2xl mx-auto">
+    <main className="w-full max-w-4xl mx-auto">
       <Link
         to="/"
         className="inline-flex items-center gap-2 mb-6 text-sm font-mono text-muted-foreground hover:text-accent transition-colors group"
@@ -396,7 +396,7 @@ function VoteDetailPage() {
 function App() {
   return (
     <div className="min-h-screen flex flex-col items-center p-6 bg-transparent text-foreground">
-      <header className="w-full max-w-2xl flex justify-between items-center mb-10 border-b border-border pb-4">
+      <header className="w-full max-w-4xl flex justify-between items-center mb-10 border-b border-border pb-4">
         <Link to="/" className="flex items-center gap-3">
           <img src="/logo.svg" alt="Obscura" className="w-12 h-12" />
           <h1
