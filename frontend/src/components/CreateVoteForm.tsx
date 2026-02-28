@@ -98,7 +98,7 @@ export function CreateVoteForm() {
   };
 
   return (
-    <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full max-w-lg mx-auto relative overflow-hidden">
+    <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent opacity-50"></div>
 
       <h3 className="text-xl font-bold font-mono tracking-widest uppercase mb-6 text-foreground/90">

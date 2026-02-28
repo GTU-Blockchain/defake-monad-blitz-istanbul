@@ -26,20 +26,30 @@ export function CommitForm({ contractAddress }: { contractAddress: `0x${string}`
   };
 
   return (
-    <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full max-w-md mx-auto mb-8 relative overflow-hidden">
+    <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent opacity-50"></div>
 
       <h3 className="text-xl font-bold font-mono tracking-widest uppercase mb-6 text-foreground/90">
         Cast Your Vote
       </h3>
       {hasCommitted || success ? (
-        <div className="p-4 bg-orange-500/10 border border-orange-500/30 text-orange-400 rounded-sm">
-          <p className="font-bold font-mono text-sm uppercase mb-1">
-            Status: Committed
+        <div className="flex flex-col items-center text-center py-4">
+          <div className="w-16 h-16 rounded-full bg-accent/10 border-2 border-accent/50 flex items-center justify-center mb-4">
+            <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-accent">
+              <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <p className="font-bold font-mono text-lg uppercase mb-2 text-accent">
+            Vote Committed
           </p>
-          <p className="text-xs text-orange-300/80 leading-relaxed font-mono">
-            Your secret is saved in this browser. Do not clear your browser data.
+          <p className="text-sm text-muted-foreground leading-relaxed mb-4 max-w-xs">
+            Your vote has been securely encrypted and submitted on-chain. Come back during the Reveal phase to finalize it.
           </p>
+          <div className="w-full p-3 bg-orange-500/10 border border-orange-500/30 rounded-sm">
+            <p className="text-xs text-orange-400 font-mono leading-relaxed">
+              Your secret is stored in this browser. Do not clear your browser data or you will lose your vote.
+            </p>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleCommit} className="space-y-4">

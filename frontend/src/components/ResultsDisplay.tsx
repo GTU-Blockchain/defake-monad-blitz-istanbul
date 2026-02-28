@@ -3,12 +3,14 @@ import { useVotingState } from "../hooks/useVotingState";
 export function ResultsDisplay({ contractAddress }: { contractAddress: `0x${string}` }) {
   const { phase, proposals } = useVotingState(contractAddress);
 
+  // Don't show during COMMIT phase
+  if (phase === "COMMIT") return null;
   if (!proposals || proposals.length === 0) return null;
 
   const totalVotes = proposals.reduce((acc, p) => acc + Number(p.voteCount), 0);
 
   let maxVotes = -1;
-  const winners: any[] = [];
+  const winners: { name: string; voteCount: bigint }[] = [];
   for (const p of proposals) {
     const v = Number(p.voteCount);
     if (v > maxVotes) {
@@ -21,7 +23,7 @@ export function ResultsDisplay({ contractAddress }: { contractAddress: `0x${stri
   }
 
   return (
-    <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full max-w-md mx-auto relative overflow-hidden">
+    <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent opacity-50"></div>
 
       <h3 className="text-xl font-bold font-mono tracking-widest uppercase mb-6 text-foreground/90">

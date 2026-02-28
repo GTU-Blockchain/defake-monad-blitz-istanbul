@@ -1,21 +1,66 @@
+import { useEffect, useRef, useState } from "react";
 import { useReadContracts } from "wagmi";
 import { ABI } from "../config/contract";
 
 export function useVotingState(contractAddress: `0x${string}`) {
+  const [phase, setPhase] = useState<string>("COMMIT");
+
   const { data, refetch } = useReadContracts({
     contracts: [
       { address: contractAddress, abi: ABI, functionName: "currentPhase" },
       { address: contractAddress, abi: ABI, functionName: "timeLeft" },
       { address: contractAddress, abi: ABI, functionName: "getProposals" },
     ],
-    query: { refetchInterval: 5000 },
+    query: { refetchInterval: phase === "REVEAL" ? 5000 : 30000 },
   });
 
-  const phase = (data?.[0]?.result as string) ?? "COMMIT";
-  const timeLeft = data?.[1]?.result as [bigint, bigint] | undefined;
+  const chainPhase = (data?.[0]?.result as string) ?? "COMMIT";
+
+  useEffect(() => {
+    setPhase(chainPhase);
+  }, [chainPhase]);
+  const chainTimeLeft = data?.[1]?.result as [bigint, bigint] | undefined;
   const proposals = data?.[2]?.result as
     | { name: string; voteCount: bigint }[]
     | undefined;
+
+  // Local countdown: sync from chain, then tick every second
+  const [localCommitLeft, setLocalCommitLeft] = useState<number>(0);
+  const [localRevealLeft, setLocalRevealLeft] = useState<number>(0);
+  const syncedAt = useRef<number>(0);
+
+  // Sync when chain data arrives
+  useEffect(() => {
+    if (chainTimeLeft) {
+      setLocalCommitLeft(Number(chainTimeLeft[0]));
+      setLocalRevealLeft(Number(chainTimeLeft[1]));
+      syncedAt.current = Date.now();
+    }
+  }, [chainTimeLeft?.[0], chainTimeLeft?.[1]]);
+
+  // Tick every second
+  useEffect(() => {
+    if (phase === "ENDED") return;
+
+    const interval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - syncedAt.current) / 1000);
+      if (chainTimeLeft) {
+        const newCommit = Math.max(0, Number(chainTimeLeft[0]) - elapsed);
+        const newReveal = Math.max(0, Number(chainTimeLeft[1]) - elapsed);
+        setLocalCommitLeft(newCommit);
+        setLocalRevealLeft(newReveal);
+
+        // Phase transition detected — refetch from chain
+        if ((newCommit === 0 && phase === "COMMIT") || (newReveal === 0 && phase === "REVEAL")) {
+          refetch();
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [phase, chainTimeLeft, refetch]);
+
+  const timeLeft: [bigint, bigint] = [BigInt(localCommitLeft), BigInt(localRevealLeft)];
 
   return { phase, timeLeft, proposals, refetch };
 }

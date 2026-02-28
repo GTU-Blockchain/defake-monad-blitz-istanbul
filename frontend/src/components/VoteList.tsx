@@ -1,32 +1,26 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useVoteList } from "../hooks/useFactory";
-import { useReadContracts } from "wagmi";
-import { ABI } from "../config/contract";
+import { useVotingState } from "../hooks/useVotingState";
 
 function shortenAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
-function VoteCard({
-  vote,
-}: {
-  vote: {
-    contractAddress: `0x${string}`;
-    creator: `0x${string}`;
-    title: string;
-    createdAt: bigint;
-  };
-}) {
-  const { data } = useReadContracts({
-    contracts: [
-      { address: vote.contractAddress, abi: ABI, functionName: "currentPhase" },
-      { address: vote.contractAddress, abi: ABI, functionName: "timeLeft" },
-    ],
-    query: { refetchInterval: 5000 },
-  });
+function hasVoted(contractAddress: string): boolean {
+  return localStorage.getItem(`commit_reveal_secret_${contractAddress}`) !== null;
+}
 
-  const phase = (data?.[0]?.result as string) ?? "...";
-  const timeLeft = data?.[1]?.result as [bigint, bigint] | undefined;
+type VoteData = {
+  contractAddress: `0x${string}`;
+  creator: `0x${string}`;
+  title: string;
+  createdAt: bigint;
+};
+
+function VoteCard({ vote }: { vote: VoteData }) {
+  const { phase, timeLeft } = useVotingState(vote.contractAddress);
+  const voted = hasVoted(vote.contractAddress);
 
   let timeRemaining = 0;
   if (phase === "COMMIT" && timeLeft) {
@@ -53,16 +47,30 @@ function VoteCard({
   return (
     <Link
       to={`/vote/${vote.contractAddress}`}
-      className="block bg-background/60 backdrop-blur-md p-5 rounded-sm border border-border hover:border-accent/50 shadow-lg transition-all duration-200 relative overflow-hidden group"
+      className={`block bg-background/60 backdrop-blur-md p-5 rounded-sm border shadow-lg transition-all duration-200 relative overflow-hidden group ${
+        voted
+          ? "border-accent/40 hover:border-accent/70"
+          : "border-border hover:border-accent/50"
+      }`}
     >
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-50 transition-opacity"></div>
 
       <div className="flex justify-between items-start mb-3">
-        <h3 className="text-lg font-bold font-mono text-foreground/90 tracking-wide">
-          {vote.title}
-        </h3>
+        <div className="flex items-center gap-2">
+          {voted && (
+            <span
+              title="You voted"
+              className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent/20 border border-accent/50 text-accent text-xs flex-shrink-0"
+            >
+              &#10003;
+            </span>
+          )}
+          <h3 className="text-lg font-bold font-mono text-foreground/90 tracking-wide">
+            {vote.title}
+          </h3>
+        </div>
         <span
-          className={`text-xs font-mono px-2 py-1 rounded-sm border ${phaseColors[phase] || "bg-muted text-muted-foreground border-border"}`}
+          className={`text-xs font-mono px-2 py-1 rounded-sm border flex-shrink-0 ml-2 ${phaseColors[phase] || "bg-muted text-muted-foreground border-border"}`}
         >
           {phase}
         </span>
@@ -78,26 +86,59 @@ function VoteCard({
   );
 }
 
+type Filter = "all" | "voted" | "not_voted";
+
 export function VoteList() {
   const { votes, isLoading } = useVoteList();
+  const [filter, setFilter] = useState<Filter>("all");
+
+  const filteredVotes = [...votes].reverse().filter((vote) => {
+    if (filter === "all") return true;
+    const voted = hasVoted(vote.contractAddress);
+    return filter === "voted" ? voted : !voted;
+  });
+
+  const filterButtons: { key: Filter; label: string }[] = [
+    { key: "all", label: "All" },
+    { key: "voted", label: "Voted" },
+    { key: "not_voted", label: "Not Voted" },
+  ];
 
   return (
-    <div className="w-full max-w-lg mx-auto">
-      <h2 className="text-xl font-bold font-mono tracking-widest uppercase mb-6 text-foreground/90">
-        All Votes
-      </h2>
+    <div className="w-full">
+      <div className="flex justify-end items-center mb-4">
+        <div className="flex gap-1">
+          {filterButtons.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`px-3 py-1 text-xs font-mono rounded-sm border transition-colors ${
+                filter === f.key
+                  ? "border-accent text-accent bg-accent/10"
+                  : "border-border text-muted-foreground hover:text-foreground hover:border-border/80"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {isLoading ? (
         <p className="text-muted-foreground font-mono text-sm text-center py-8">
           Loading...
         </p>
-      ) : votes.length === 0 ? (
+      ) : filteredVotes.length === 0 ? (
         <div className="bg-background/60 backdrop-blur-md p-8 rounded-sm border border-border text-center text-muted-foreground font-mono">
-          No votes yet. Create the first one!
+          {filter === "all"
+            ? "No votes yet. Create the first one!"
+            : filter === "voted"
+              ? "You haven't voted on any proposals yet."
+              : "You've voted on all proposals!"}
         </div>
       ) : (
         <div className="space-y-3">
-          {[...votes].reverse().map((vote) => (
+          {filteredVotes.map((vote) => (
             <VoteCard key={vote.contractAddress} vote={vote} />
           ))}
         </div>

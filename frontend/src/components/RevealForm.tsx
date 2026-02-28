@@ -2,17 +2,30 @@ import { useState } from "react";
 import { useReveal } from "../hooks/useReveal";
 import { useCommit } from "../hooks/useCommit";
 import { useVotingState } from "../hooks/useVotingState";
+import { useAccount, useReadContract } from "wagmi";
+import { ABI } from "../config/contract";
 
 export function RevealForm({ contractAddress }: { contractAddress: `0x${string}` }) {
   const { phase } = useVotingState(contractAddress);
   const { submitReveal, isPending } = useReveal(contractAddress);
   const { getStoredSecret } = useCommit(contractAddress);
+  const { address } = useAccount();
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  const { data: alreadyRevealed } = useReadContract({
+    address: contractAddress,
+    abi: ABI,
+    functionName: "revealed",
+    args: address ? [address] : undefined,
+    query: { enabled: !!address && phase === "REVEAL" },
+  });
 
   const secret = getStoredSecret();
 
   if (phase !== "REVEAL") return null;
+
+  const isRevealed = success || alreadyRevealed === true;
 
   const handleReveal = async () => {
     setError("");
@@ -28,22 +41,30 @@ export function RevealForm({ contractAddress }: { contractAddress: `0x${string}`
       setSuccess(true);
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Failed to reveal vote.");
+      setError(err.shortMessage || err.message || "Failed to reveal vote.");
     }
   };
 
   return (
-    <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full max-w-md mx-auto mb-8 relative overflow-hidden">
+    <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#10B981] to-transparent opacity-50"></div>
 
       <h3 className="text-xl font-bold font-mono tracking-widest uppercase mb-6 text-foreground/90">
         Reveal Your Vote
       </h3>
 
-      {success ? (
-        <div className="p-4 bg-success/10 border border-success/30 text-success rounded-sm">
-          <p className="font-mono text-sm uppercase">
-            Vote Revealed Successfully!
+      {isRevealed ? (
+        <div className="flex flex-col items-center text-center py-4">
+          <div className="w-16 h-16 rounded-full bg-green-500/10 border-2 border-green-500/50 flex items-center justify-center mb-4">
+            <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-green-400">
+              <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <p className="font-bold font-mono text-lg uppercase mb-2 text-green-400">
+            Vote Revealed
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+            Your vote has been successfully decrypted and counted. Results will be finalized when the reveal phase ends.
           </p>
         </div>
       ) : (
