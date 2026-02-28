@@ -10,7 +10,7 @@ export function AuctionRevealForm({
 }: {
   contractAddress: `0x${string}`;
 }) {
-  const { phase } = useAuctionState(contractAddress);
+  const { phase, highestBidder } = useAuctionState(contractAddress);
   const { submitReveal, isPending } = useAuctionReveal(contractAddress);
   const { getStoredSecret } = useAuctionCommit(contractAddress);
   const { address } = useAccount();
@@ -49,6 +49,12 @@ export function AuctionRevealForm({
 
   const isRevealed = success || (bidderInfo && (bidderInfo as any)[3] === true);
   const isWithdrawn = bidderInfo && (bidderInfo as any)[4] === true;
+
+  // Check if the connected user is the winner
+  const isWinner =
+    !!address &&
+    !!highestBidder &&
+    address.toLowerCase() === highestBidder.toLowerCase();
 
   const handleReveal = async () => {
     setError("");
@@ -96,10 +102,11 @@ export function AuctionRevealForm({
             Bid Revealed
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mb-4">
-            Your bid decrypts successfully. You can withdraw your unsuccessful
-            bid (if any) or excess deposit.
+            {isWinner
+              ? "Congratulations! You are the highest bidder. Your deposit will be collected by the auction owner."
+              : "Your bid was counted. You can withdraw your deposit below."}
           </p>
-          {phase === "ENDED" && !isWithdrawn && (
+          {phase === "ENDED" && !isWithdrawn && !isWinner && (
             <button
               onClick={handleWithdraw}
               disabled={isWithdrawing}
