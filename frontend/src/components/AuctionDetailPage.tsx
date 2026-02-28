@@ -54,10 +54,16 @@ function ContractInfo({
 }
 
 function OwnerPanel({ contractAddress }: { contractAddress: `0x${string}` }) {
-  const { phase, highestBid } = useAuctionState(contractAddress);
+  const { phase, highestBid, highestBidder } = useAuctionState(contractAddress);
   const { writeContractAsync, isPending } = useWriteContract();
   const [withdrawn, setWithdrawn] = useState(false);
   const [error, setError] = useState("");
+
+  const contractWithdrawn =
+    highestBidder !== "0x0000000000000000000000000000000000000000" &&
+    highestBid === 0n;
+
+  const isWithdrawn = withdrawn || contractWithdrawn;
 
   const handleCollect = async () => {
     setError("");
@@ -85,7 +91,7 @@ function OwnerPanel({ contractAddress }: { contractAddress: `0x${string}` }) {
         You created this auction. You cannot place bids.
       </p>
 
-      {phase === "ENDED" && highestBid > 0n && !withdrawn && (
+      {phase === "ENDED" && highestBid > 0n && !isWithdrawn && (
         <div className="mt-4 space-y-3">
           <p className="text-sm font-mono text-foreground">
             Winning bid:{" "}
@@ -108,7 +114,7 @@ function OwnerPanel({ contractAddress }: { contractAddress: `0x${string}` }) {
         </div>
       )}
 
-      {withdrawn && (
+      {isWithdrawn && (
         <p className="text-sm text-green-400 font-mono mt-4">
           Winnings collected successfully!
         </p>

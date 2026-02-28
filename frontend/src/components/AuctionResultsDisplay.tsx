@@ -1,5 +1,7 @@
 import { useAuctionState } from "../hooks/useAuctionState";
 import { formatEther } from "viem";
+import { useReadContract } from "wagmi";
+import { AUCTION_ABI } from "../config/auction";
 
 export function AuctionResultsDisplay({
   contractAddress,
@@ -7,6 +9,23 @@ export function AuctionResultsDisplay({
   contractAddress: `0x${string}`;
 }) {
   const { phase, highestBid, highestBidder } = useAuctionState(contractAddress);
+
+  const hasWinner = highestBidder && highestBidder !== "0x0000000000000000000000000000000000000000";
+
+  const { data: bidderInfo } = useReadContract({
+    address: contractAddress,
+    abi: AUCTION_ABI,
+    functionName: "bidders",
+    args: hasWinner ? [highestBidder as `0x${string}`] : undefined,
+    query: {
+      enabled: !!hasWinner && phase === "ENDED" && highestBid === 0n,
+    },
+  });
+
+  const trueHighestBid =
+    hasWinner && highestBid === 0n && bidderInfo
+      ? (bidderInfo as readonly [string, bigint, bigint, boolean, boolean])[2]
+      : highestBid;
 
   // Don't show results during COMMIT
   if (phase === "COMMIT") return null;
@@ -34,7 +53,7 @@ export function AuctionResultsDisplay({
             </span>
             <div className="mt-4 flex items-baseline gap-2">
               <span className="text-3xl font-bold font-mono text-accent">
-                {formatEther(highestBid)}
+                {formatEther(trueHighestBid)}
               </span>
               <span className="text-sm font-mono text-accent/70 uppercase">
                 MON
