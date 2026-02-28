@@ -1,15 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import { useReadContracts } from "wagmi";
-import { ABI } from "../config/contract";
+import { AUCTION_ABI } from "../config/auction";
 
-export function useVotingState(contractAddress: `0x${string}`) {
+export function useAuctionState(contractAddress: `0x${string}`) {
   const [phase, setPhase] = useState<string>("COMMIT");
 
   const { data, refetch } = useReadContracts({
     contracts: [
-      { address: contractAddress, abi: ABI, functionName: "currentPhase" },
-      { address: contractAddress, abi: ABI, functionName: "timeLeft" },
-      { address: contractAddress, abi: ABI, functionName: "getProposals" },
+      {
+        address: contractAddress,
+        abi: AUCTION_ABI,
+        functionName: "currentPhase",
+      },
+      { address: contractAddress, abi: AUCTION_ABI, functionName: "timeLeft" },
+      {
+        address: contractAddress,
+        abi: AUCTION_ABI,
+        functionName: "highestBid",
+      },
+      {
+        address: contractAddress,
+        abi: AUCTION_ABI,
+        functionName: "highestBidder",
+      },
     ],
     query: { refetchInterval: phase === "REVEAL" ? 5000 : 30000 },
   });
@@ -19,10 +32,12 @@ export function useVotingState(contractAddress: `0x${string}`) {
   useEffect(() => {
     setPhase(chainPhase);
   }, [chainPhase]);
-  const chainTimeLeft = data?.[1]?.result as [bigint, bigint] | undefined;
-  const proposals = data?.[2]?.result as
-    | { name: string; voteCount: bigint }[]
+
+  const chainTimeLeft = data?.[1]?.result as
+    | readonly [bigint, bigint]
     | undefined;
+  const highestBid = (data?.[2]?.result as bigint) ?? 0n;
+  const highestBidder = (data?.[3]?.result as string) ?? "";
 
   // Local countdown: sync from chain, then tick every second
   const [localCommitLeft, setLocalCommitLeft] = useState<number>(0);
@@ -67,5 +82,5 @@ export function useVotingState(contractAddress: `0x${string}`) {
     BigInt(localRevealLeft),
   ];
 
-  return { phase, timeLeft, proposals, refetch };
+  return { phase, timeLeft, highestBid, highestBidder, refetch };
 }

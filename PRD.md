@@ -1,6 +1,7 @@
 # PRD: Commit-Reveal Voting dApp
 
-**Hackathon:** Monad Blitz Ankara 2025
+**Hackathon:** Monad Blitz Istanbul 2025
+**Project Name:** Obscura
 **Süre:** 6 saat
 **Tarih:** 28 Şubat 2025
 **Versiyon:** 1.0
