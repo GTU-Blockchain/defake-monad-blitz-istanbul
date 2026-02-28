@@ -398,9 +398,7 @@ function App() {
     <div className="min-h-screen flex flex-col items-center p-6 bg-transparent text-foreground">
       <header className="w-full max-w-2xl flex justify-between items-center mb-10 border-b border-border pb-4">
         <Link to="/" className="flex items-center gap-3">
-          <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-white">
-            <path d="M12 2L2 22h20L12 2z" fill="currentColor" />
-          </svg>
+          <img src="/logo.svg" alt="Obscura" className="w-12 h-12" />
           <h1
             className="text-2xl font-bold text-white tracking-[0.3em] uppercase"
             style={{ fontFamily: "'Orbitron', sans-serif" }}

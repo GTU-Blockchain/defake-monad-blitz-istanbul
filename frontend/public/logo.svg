@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Outer hexagon (shield shape) -->
+  <path d="M256 40 L440 140 L440 340 L256 472 L72 340 L72 140 Z" 
+        stroke="white" stroke-width="12" fill="none" opacity="0.9"/>
+  
+  <!-- Inner hexagon rotated -->
+  <path d="M256 100 L390 180 L390 320 L256 412 L122 320 L122 180 Z" 
+        stroke="white" stroke-width="6" fill="none" opacity="0.25"/>
+
+  <!-- Camera obscura eye/lens - outer ring -->
+  <circle cx="256" cy="256" r="120" stroke="white" stroke-width="8" fill="none" opacity="0.8"/>
+  
+  <!-- Iris blades (6 aperture blades) -->
+  <g opacity="0.5">
+    <path d="M256 136 Q310 200 310 256" stroke="white" stroke-width="4" fill="none"/>
+    <path d="M360 196 Q310 260 256 276" stroke="white" stroke-width="4" fill="none"/>
+    <path d="M360 316 Q290 310 256 256" stroke="white" stroke-width="4" fill="none"/>
+    <path d="M256 376 Q202 310 202 256" stroke="white" stroke-width="4" fill="none"/>
+    <path d="M152 316 Q202 250 256 236" stroke="white" stroke-width="4" fill="none"/>
+    <path d="M152 196 Q222 202 256 256" stroke="white" stroke-width="4" fill="none"/>
+  </g>
+
+  <!-- Inner aperture ring -->
+  <circle cx="256" cy="256" r="60" stroke="white" stroke-width="6" fill="none" opacity="0.6"/>
+  
+  <!-- Core - the hidden data point -->
+  <circle cx="256" cy="256" r="16" fill="white" opacity="0.85"/>
+  <circle cx="256" cy="256" r="8" fill="white" opacity="1"/>
+
+  <!-- Lock keyhole overlay on center -->
+  <rect x="250" y="260" width="12" height="20" rx="2" fill="white" opacity="0.5"/>
+</svg>
