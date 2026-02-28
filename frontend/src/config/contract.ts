@@ -1,5 +1,55 @@
-export const CONTRACT_ADDRESS = import.meta.env
-  .VITE_CONTRACT_ADDRESS as `0x${string}`;
+export const FACTORY_ADDRESS = import.meta.env
+  .VITE_FACTORY_ADDRESS as `0x${string}`;
+
+export const FACTORY_ABI = [
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: "voteId", type: "uint256" },
+      { indexed: false, name: "contractAddress", type: "address" },
+      { indexed: false, name: "creator", type: "address" },
+      { indexed: false, name: "title", type: "string" },
+    ],
+    name: "VoteCreated",
+    type: "event",
+  },
+  {
+    inputs: [
+      { name: "_title", type: "string" },
+      { name: "_proposalNames", type: "string[]" },
+      { name: "_commitDuration", type: "uint256" },
+      { name: "_revealDuration", type: "uint256" },
+    ],
+    name: "createVote",
+    outputs: [{ name: "", type: "address" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getVotes",
+    outputs: [
+      {
+        components: [
+          { name: "contractAddress", type: "address" },
+          { name: "creator", type: "address" },
+          { name: "title", type: "string" },
+          { name: "createdAt", type: "uint256" },
+        ],
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getVoteCount",
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
 
 export const ABI = [
   {

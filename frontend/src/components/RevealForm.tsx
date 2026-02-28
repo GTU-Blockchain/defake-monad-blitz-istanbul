@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useReveal } from "../hooks/useReveal";
 import { useCommit } from "../hooks/useCommit";
 import { useVotingState } from "../hooks/useVotingState";
 
-export function RevealForm() {
-  const { phase } = useVotingState();
-  const { submitReveal, isPending } = useReveal();
-  const { getStoredSecret } = useCommit();
+export function RevealForm({ contractAddress }: { contractAddress: `0x${string}` }) {
+  const { phase } = useVotingState(contractAddress);
+  const { submitReveal, isPending } = useReveal(contractAddress);
+  const { getStoredSecret } = useCommit(contractAddress);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,7 +34,6 @@ export function RevealForm() {
 
   return (
     <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full max-w-md mx-auto mb-8 relative overflow-hidden">
-      {/* Decorative top border */}
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#10B981] to-transparent opacity-50"></div>
 
       <h3 className="text-xl font-bold font-mono tracking-widest uppercase mb-6 text-foreground/90">

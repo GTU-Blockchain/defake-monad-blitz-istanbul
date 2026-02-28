@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAccount } from "wagmi";
 import { useCommit } from "../hooks/useCommit";
 import { useVotingState } from "../hooks/useVotingState";
 
-export function CommitForm() {
-  const { phase, proposals } = useVotingState();
+export function CommitForm({ contractAddress }: { contractAddress: `0x${string}` }) {
+  const { phase, proposals } = useVotingState(contractAddress);
   const { address } = useAccount();
-  const { submitCommit, isPending, getStoredSecret } = useCommit();
+  const { submitCommit, isPending, getStoredSecret } = useCommit(contractAddress);
   const [selectedVote, setSelectedVote] = useState<number | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // Use previously saved secret as commit-check for this browser
   const hasCommitted = !!getStoredSecret();
 
   if (phase !== "COMMIT") return null;
@@ -28,7 +27,6 @@ export function CommitForm() {
 
   return (
     <div className="bg-background/60 backdrop-blur-md p-6 rounded-sm border border-border shadow-2xl w-full max-w-md mx-auto mb-8 relative overflow-hidden">
-      {/* Decorative top border */}
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent opacity-50"></div>
 
       <h3 className="text-xl font-bold font-mono tracking-widest uppercase mb-6 text-foreground/90">
@@ -40,8 +38,7 @@ export function CommitForm() {
             Status: Committed
           </p>
           <p className="text-xs text-orange-300/80 leading-relaxed font-mono">
-            ⚠️ <strong>CRITICAL:</strong> Your secret is saved in this browser.
-            Do not clear your browser data.
+            Your secret is saved in this browser. Do not clear your browser data.
           </p>
         </div>
       ) : (
@@ -50,13 +47,13 @@ export function CommitForm() {
             {proposals?.map((p, index) => (
               <label
                 key={index}
+                onClick={() => setSelectedVote(index)}
                 className={`block p-4 border rounded-sm cursor-pointer transition-all duration-200 group relative ${
                   selectedVote === index
                     ? "border-accent bg-accent/10 shadow-[0_0_15px_rgba(32,129,226,0.3)]"
                     : "border-border bg-muted/30 hover:bg-muted/70 hover:border-border/80"
                 }`}
               >
-                {/* Active indicator dot */}
                 {selectedVote === index && (
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-accent rounded-r-sm"></div>
                 )}
@@ -72,7 +69,6 @@ export function CommitForm() {
                       <div className="w-2 h-2 rounded-full bg-accent"></div>
                     )}
                   </div>
-
                   <span
                     className={`text-lg transition-colors ${
                       selectedVote === index

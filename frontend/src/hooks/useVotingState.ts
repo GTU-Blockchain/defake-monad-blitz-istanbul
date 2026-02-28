@@ -1,12 +1,12 @@
 import { useReadContracts } from "wagmi";
-import { ABI, CONTRACT_ADDRESS } from "../config/contract";
+import { ABI } from "../config/contract";
 
-export function useVotingState() {
+export function useVotingState(contractAddress: `0x${string}`) {
   const { data, refetch } = useReadContracts({
     contracts: [
-      { address: CONTRACT_ADDRESS, abi: ABI, functionName: "currentPhase" },
-      { address: CONTRACT_ADDRESS, abi: ABI, functionName: "timeLeft" },
-      { address: CONTRACT_ADDRESS, abi: ABI, functionName: "getProposals" },
+      { address: contractAddress, abi: ABI, functionName: "currentPhase" },
+      { address: contractAddress, abi: ABI, functionName: "timeLeft" },
+      { address: contractAddress, abi: ABI, functionName: "getProposals" },
     ],
     query: { refetchInterval: 5000 },
   });

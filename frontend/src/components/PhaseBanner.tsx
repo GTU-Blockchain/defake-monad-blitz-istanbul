@@ -1,8 +1,7 @@
-import React from "react";
 import { useVotingState } from "../hooks/useVotingState";
 
-export function PhaseBanner() {
-  const { phase, timeLeft } = useVotingState();
+export function PhaseBanner({ contractAddress }: { contractAddress: `0x${string}` }) {
+  const { phase, timeLeft } = useVotingState(contractAddress);
 
   let phaseColor = "bg-muted border-border";
   let timeRemaining = 0;

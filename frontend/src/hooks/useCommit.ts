@@ -1,10 +1,12 @@
 import { keccak256, encodePacked, toHex } from "viem";
 import { useWriteContract } from "wagmi";
-import { ABI, CONTRACT_ADDRESS } from "../config/contract";
+import { ABI } from "../config/contract";
 
-const STORAGE_KEY = "commit_reveal_secret";
+function storageKey(contractAddress: string) {
+  return `commit_reveal_secret_${contractAddress}`;
+}
 
-export function useCommit() {
+export function useCommit(contractAddress: `0x${string}`) {
   const { writeContractAsync, isPending } = useWriteContract();
 
   const submitCommit = async (
@@ -21,14 +23,13 @@ export function useCommit() {
       ),
     );
 
-    // Persist secret — user MUST keep this to reveal
     localStorage.setItem(
-      STORAGE_KEY,
+      storageKey(contractAddress),
       JSON.stringify({ voteIndex, nonce, hash }),
     );
 
     return writeContractAsync({
-      address: CONTRACT_ADDRESS,
+      address: contractAddress,
       abi: ABI,
       functionName: "commit",
       args: [hash],
@@ -36,7 +37,7 @@ export function useCommit() {
   };
 
   const getStoredSecret = () => {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey(contractAddress));
     return raw
       ? (JSON.parse(raw) as {
           voteIndex: number;
